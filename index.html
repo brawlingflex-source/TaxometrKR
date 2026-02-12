@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>🚖 Таксометр — Михаил и Николай</title>
+    <title>🚖 Таксометр + Чат</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -35,7 +35,6 @@
             color: white;
         }
         
-        /* Экран входа */
         .auth-screen {
             display: flex;
             flex-direction: column;
@@ -78,12 +77,6 @@
             transition: 0.2s;
         }
         
-        .auth-btn:active {
-            transform: scale(0.97);
-            background: #ffed4a;
-        }
-        
-        /* Интерфейс таксометра - Михаил */
         .taximeter-screen {
             display: flex;
             flex-direction: column;
@@ -103,6 +96,26 @@
             color: #ffd700;
         }
         
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .chat-icon-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(37,211,102,0.3);
+        }
+        
         .logout-btn {
             background: #2f3542;
             color: white;
@@ -113,7 +126,6 @@
             cursor: pointer;
         }
         
-        /* Рейтинг звёздами */
         .rating-container {
             background: linear-gradient(145deg, #151a24, #0f131c);
             padding: 20px;
@@ -142,7 +154,6 @@
             color: #a0a8b8;
         }
         
-        /* Карточки статистики */
         .stats-grid {
             display: flex;
             flex-direction: column;
@@ -176,7 +187,6 @@
             margin-left: 8px;
         }
         
-        /* Интерфейс Николая */
         .manager-screen {
             display: flex;
             flex-direction: column;
@@ -258,34 +268,188 @@
             margin-bottom: 12px;
         }
         
-        .control-btn:active {
-            transform: scale(0.97);
-            background: #ffed4a;
-        }
-        
-        .control-btn.secondary {
-            background: #2f3542;
-            color: white;
-        }
-        
         .control-btn.danger {
             background: #dc3545;
             color: white;
         }
         
-        .control-btn.warning {
-            background: #ffc107;
-            color: #0b0e14;
+        .control-btn.success {
+            background: #25d366;
+            color: white;
         }
         
-        .button-group {
+        .chat-screen {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            background: #0e1621;
+            border-radius: 24px;
+            overflow: hidden;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 450px;
+            z-index: 1000;
+            border: 2px solid #ffd700;
+        }
+        
+        .chat-header {
+            background: #1e2a3a;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2f3542;
+        }
+        
+        .chat-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        
+        .chat-client-name {
+            font-size: 14px;
+            color: #a0a8b8;
+            margin-top: 4px;
+        }
+        
+        .chat-close-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: #1e2a3a;
+            color: white;
+            align-self: flex-start;
+            word-wrap: break-word;
+        }
+        
+        .message.my-message {
+            background: #25d366;
+            color: white;
+            align-self: flex-end;
+        }
+        
+        .message.system-message {
+            background: #2f3542;
+            color: #ffd700;
+            align-self: center;
+            font-style: italic;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .message-sender {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .chat-input-container {
+            background: #1e2a3a;
+            padding: 20px;
             display: flex;
             gap: 12px;
-            margin-top: 8px;
+            border-top: 1px solid #2f3542;
         }
         
-        .button-group .control-btn {
-            margin-bottom: 0;
+        .chat-input {
+            flex: 1;
+            padding: 14px;
+            background: #0b0e14;
+            border: 2px solid #2f3542;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .chat-send-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-send-btn:disabled {
+            background: #2f3542;
+            cursor: not-allowed;
+        }
+        
+        .typing-indicator {
+            background: #1e2a3a;
+            padding: 12px 18px;
+            border-radius: 18px;
+            align-self: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #a0a8b8;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
         }
         
         .hidden {
@@ -302,7 +466,7 @@
             padding: 16px 24px;
             border-radius: 30px;
             font-size: 16px;
-            z-index: 1000;
+            z-index: 2000;
             border: 1px solid #ffd700;
             animation: slideUp 0.3s;
         }
@@ -322,20 +486,21 @@
             <button id="login-btn" class="auth-btn">Войти</button>
         </div>
 
-        <!-- Интерфейс Михаила (Водитель) -->
+        <!-- Интерфейс Михаила -->
         <div id="mikhail-screen" class="taximeter-screen hidden">
             <div class="header">
                 <span class="user-name">🚖 Михаил</span>
-                <button id="logout-btn-mikhail" class="logout-btn">Выйти</button>
+                <div class="header-buttons">
+                    <button id="mikhail-chat-btn" class="chat-icon-btn">💬</button>
+                    <button id="logout-btn-mikhail" class="logout-btn">Выйти</button>
+                </div>
             </div>
             
-            <!-- Рейтинг звёздами -->
             <div class="rating-container">
                 <div class="rating-stars" id="star-rating"></div>
                 <span class="rating-value" id="rating-text">0.0 ★</span>
             </div>
             
-            <!-- Статистика -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <span class="stat-label">📊 Проехано сегодня</span>
@@ -344,7 +509,6 @@
                         <span class="stat-unit">км</span>
                     </div>
                 </div>
-                
                 <div class="stat-card">
                     <span class="stat-label">💰 Заработано</span>
                     <div>
@@ -352,7 +516,6 @@
                         <span class="stat-unit">₽</span>
                     </div>
                 </div>
-                
                 <div class="stat-card">
                     <span class="stat-label">⛽ Бензин</span>
                     <div>
@@ -363,14 +526,16 @@
             </div>
         </div>
 
-        <!-- Интерфейс Николая (Менеджер) -->
+        <!-- Интерфейс Николая -->
         <div id="nikolay-screen" class="manager-screen hidden">
             <div class="header">
                 <span class="user-name">📋 Николай</span>
-                <button id="logout-btn-nikolay" class="logout-btn">Выйти</button>
+                <div class="header-buttons">
+                    <button id="nikolay-chat-btn" class="chat-icon-btn">💬</button>
+                    <button id="logout-btn-nikolay" class="logout-btn">Выйти</button>
+                </div>
             </div>
             
-            <!-- Статус Михаила -->
             <div class="driver-status">
                 <div class="driver-name">🚖 Михаил</div>
                 <div class="driver-stats">
@@ -382,33 +547,23 @@
             </div>
             
             <div class="control-panel">
-                <!-- Добавление километров -->
                 <div class="control-section">
                     <div class="control-title">➕ Добавить километры</div>
                     <input type="number" id="add-km-input" class="control-input" placeholder="Километры" step="0.01" min="0">
                     <button id="add-km-btn" class="control-btn">Добавить км</button>
-                    
-                    <!-- Кнопка очистки километров -->
-                    <button id="clear-km-btn" class="control-btn danger">🧹 Очистить километры до 0</button>
+                    <button id="clear-km-btn" class="control-btn danger">🧹 Очистить километры</button>
                 </div>
-                
-                <!-- Добавление бензина -->
                 <div class="control-section">
                     <div class="control-title">⛽ Добавить бензин</div>
                     <input type="number" id="add-fuel-input" class="control-input" placeholder="Литры" step="0.01" min="0">
                     <button id="add-fuel-btn" class="control-btn secondary">Добавить бензин</button>
                 </div>
-                
-                <!-- Управление заработком -->
                 <div class="control-section">
                     <div class="control-title">💰 Управление заработком</div>
-                    <!-- Кнопка очистки заработка -->
-                    <button id="clear-earned-btn" class="control-btn danger">🧹 Очистить заработок до 0</button>
+                    <button id="clear-earned-btn" class="control-btn danger">🧹 Очистить заработок</button>
                 </div>
-                
-                <!-- Добавление рейтинга -->
                 <div class="control-section">
-                    <div class="control-title">⭐ Оценить поездку</div>
+                    <div class="control-title">⭐ Оценки</div>
                     <div style="display: flex; gap: 10px; margin-bottom: 16px;">
                         <button id="rate-1" class="control-btn" style="flex: 1; background: #3a4050;">1★</button>
                         <button id="rate-2" class="control-btn" style="flex: 1; background: #3a4050;">2★</button>
@@ -416,11 +571,37 @@
                         <button id="rate-4" class="control-btn" style="flex: 1; background: #3a4050;">4★</button>
                         <button id="rate-5" class="control-btn" style="flex: 1; background: #3a4050;">5★</button>
                     </div>
-                    
-                    <!-- Кнопка очистки рейтинга -->
-                    <button id="clear-rating-btn" class="control-btn danger">🧹 Очистить рейтинг до 0</button>
+                    <button id="clear-rating-btn" class="control-btn danger">🧹 Очистить рейтинг</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Чат -->
+    <div id="chat-overlay" class="chat-overlay hidden"></div>
+    <div id="chat-screen" class="chat-screen hidden">
+        <div class="chat-header">
+            <div>
+                <div class="chat-title" id="chat-title">Чат</div>
+                <div class="chat-client-name" id="chat-subtitle"></div>
+            </div>
+            <button id="chat-close-btn" class="chat-close-btn">✕</button>
+        </div>
+        
+        <div id="client-name-section" style="padding: 20px; background: #1e2a3a;">
+            <input type="text" id="client-name-input" class="control-input" placeholder="Введите имя клиента" autocomplete="off">
+            <button id="start-chat-btn" class="control-btn success">🚀 Начать чат</button>
+        </div>
+        
+        <div id="end-chat-section" class="hidden" style="padding: 20px; background: #1e2a3a;">
+            <button id="end-chat-btn" class="control-btn danger">🏁 Завершить чат</button>
+        </div>
+        
+        <div id="chat-messages" class="chat-messages"></div>
+        
+        <div class="chat-input-container" id="chat-input-section">
+            <input type="text" id="chat-message-input" class="chat-input" placeholder="Сообщение" autocomplete="off">
+            <button id="chat-send-btn" class="chat-send-btn">➤</button>
         </div>
     </div>
 
@@ -436,7 +617,6 @@
             appId: "1:1057251395030:web:86f8f718ed938055e29077"
         };
 
-        // Инициализация Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
@@ -445,32 +625,53 @@
         const TARIFF = 120;
         const FUEL_CONSUMPTION = 0.5;
         const MIKHAIL_ID = 'mikhail_driver';
+        const CHAT_ID = 'mikhail_nikolay_chat';
 
         // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
         let currentUserName = '';
         let mikhailListener = null;
+        let chatListener = null;
+        let typingListener = null;
+        let chatInfoListener = null;
+        let currentClientName = '';
+        let isChatActive = false;
+        let isSendingMessage = false;
+        let isEndingChat = false;
+        let isStartingChat = false;
 
         // ========== DOM ЭЛЕМЕНТЫ ==========
         const authScreen = document.getElementById('auth-screen');
         const mikhailScreen = document.getElementById('mikhail-screen');
         const nikolayScreen = document.getElementById('nikolay-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const chatOverlay = document.getElementById('chat-overlay');
         const usernameInput = document.getElementById('username-input');
         const loginBtn = document.getElementById('login-btn');
 
-        // Элементы Михаила
+        const chatTitle = document.getElementById('chat-title');
+        const chatSubtitle = document.getElementById('chat-subtitle');
+        const clientNameSection = document.getElementById('client-name-section');
+        const endChatSection = document.getElementById('end-chat-section');
+        const clientNameInput = document.getElementById('client-name-input');
+        const startChatBtn = document.getElementById('start-chat-btn');
+        const endChatBtn = document.getElementById('end-chat-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatMessageInput = document.getElementById('chat-message-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const chatCloseBtn = document.getElementById('chat-close-btn');
+
         const kmTodayEl = document.getElementById('km-today');
         const earnedTodayEl = document.getElementById('earned-today');
         const fuelLeftEl = document.getElementById('fuel-left');
         const ratingTextEl = document.getElementById('rating-text');
         const starRatingEl = document.getElementById('star-rating');
 
-        // Элементы Николая
         const nikolayRatingEl = document.getElementById('nikolay-rating');
         const nikolayKmEl = document.getElementById('nikolay-km');
         const nikolayMoneyEl = document.getElementById('nikolay-money');
         const nikolayFuelEl = document.getElementById('nikolay-fuel');
         
-        // ========== ФУНКЦИИ ==========
+        // ========== ФУНКЦИИ ТАКСОМЕТРА ==========
         
         function showToast(text) {
             const toast = document.createElement('div');
@@ -480,7 +681,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Инициализация базы данных
         async function initDatabase() {
             const snapshot = await db.ref(`drivers/${MIKHAIL_ID}`).once('value');
             if (!snapshot.exists()) {
@@ -495,52 +695,35 @@
             }
         }
 
-        // Обновление интерфейса Михаила
         function updateMikhailUI(data) {
             if (!data) return;
-            
             kmTodayEl.textContent = Number(data.kmToday || 0).toFixed(2);
             earnedTodayEl.textContent = Number(data.earnedToday || 0).toFixed(2);
             fuelLeftEl.textContent = Number(data.fuelLeft || 0).toFixed(2);
-            
             const rating = Number(data.averageRating || 0);
             ratingTextEl.textContent = `${rating.toFixed(1)} ★`;
-            
             generateStars(rating);
         }
 
-        // Генерация звёзд
         function generateStars(rating) {
             const fullStars = Math.floor(rating);
             const hasHalfStar = rating % 1 >= 0.5;
-            
             let starsHtml = '';
             for (let i = 0; i < 5; i++) {
-                if (i < fullStars) {
-                    starsHtml += '<span class="star filled">★</span>';
-                } else if (i === fullStars && hasHalfStar) {
-                    starsHtml += '<span class="star filled">½</span>';
-                } else {
-                    starsHtml += '<span class="star">☆</span>';
-                }
+                if (i < fullStars) starsHtml += '<span class="star filled">★</span>';
+                else if (i === fullStars && hasHalfStar) starsHtml += '<span class="star filled">½</span>';
+                else starsHtml += '<span class="star">☆</span>';
             }
             starRatingEl.innerHTML = starsHtml;
         }
 
-        // Слушатель изменений Михаила
         function subscribeToMikhail() {
-            if (mikhailListener) {
-                db.ref(`drivers/${MIKHAIL_ID}`).off('value', mikhailListener);
-            }
-            
+            if (mikhailListener) db.ref(`drivers/${MIKHAIL_ID}`).off('value', mikhailListener);
             const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
             mikhailListener = mikhailRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    if (currentUserName === 'Михаил') {
-                        updateMikhailUI(data);
-                    }
-                    
+                    if (currentUserName === 'Михаил') updateMikhailUI(data);
                     if (currentUserName === 'Николай') {
                         nikolayKmEl.textContent = Number(data.kmToday || 0).toFixed(2);
                         nikolayMoneyEl.textContent = Number(data.earnedToday || 0).toFixed(2);
@@ -553,125 +736,401 @@
 
         // ========== ДЕЙСТВИЯ НИКОЛАЯ ==========
         
-        // Добавить километры
         async function addKilometers(km) {
-            if (km <= 0) {
-                showToast('Введите положительное число');
-                return;
-            }
-            
+            if (km <= 0) { showToast('Введите положительное число'); return; }
             const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
             const snapshot = await mikhailRef.once('value');
             const data = snapshot.val();
-            
             if (!data) return;
-            
             const newKm = Number(data.kmToday || 0) + km;
             const newEarned = Number(data.earnedToday || 0) + (km * TARIFF);
             const newFuel = Number(data.fuelLeft || 0) - (km * FUEL_CONSUMPTION);
-            
-            if (newFuel < 0) {
-                showToast('❌ Недостаточно бензина! Сначала добавьте бензин.');
-                return;
-            }
-            
-            await mikhailRef.update({
-                kmToday: Number(newKm.toFixed(2)),
-                earnedToday: Number(newEarned.toFixed(2)),
-                fuelLeft: Number(newFuel.toFixed(2))
-            });
-            
-            showToast(`✅ Добавлено ${km.toFixed(2)} км, заработок +${(km * TARIFF).toFixed(2)} ₽`);
+            if (newFuel < 0) { showToast('❌ Недостаточно бензина!'); return; }
+            await mikhailRef.update({ kmToday: Number(newKm.toFixed(2)), earnedToday: Number(newEarned.toFixed(2)), fuelLeft: Number(newFuel.toFixed(2)) });
+            showToast(`✅ Добавлено ${km.toFixed(2)} км, +${(km * TARIFF).toFixed(2)} ₽`);
         }
 
-        // Добавить бензин
         async function addFuel(liters) {
-            if (liters <= 0) {
-                showToast('Введите положительное число');
-                return;
-            }
-            
+            if (liters <= 0) { showToast('Введите положительное число'); return; }
             const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
             const snapshot = await mikhailRef.once('value');
             const data = snapshot.val();
-            
             if (!data) return;
-            
             const newFuel = Number(data.fuelLeft || 0) + liters;
-            
-            await mikhailRef.update({
-                fuelLeft: Number(newFuel.toFixed(2))
-            });
-            
+            await mikhailRef.update({ fuelLeft: Number(newFuel.toFixed(2)) });
             showToast(`⛽ Добавлено ${liters.toFixed(2)} л бензина`);
         }
 
-        // Добавить оценку
         async function addRating(rating) {
             if (rating < 1 || rating > 5) return;
-            
             const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
             const snapshot = await mikhailRef.once('value');
             const data = snapshot.val();
-            
             if (!data) return;
-            
             const ratings = data.ratings || [];
             ratings.push(rating);
-            
             const sum = ratings.reduce((a, b) => a + b, 0);
             const average = sum / ratings.length;
-            
-            await mikhailRef.update({
-                ratings: ratings,
-                averageRating: Number(average.toFixed(1))
-            });
-            
+            await mikhailRef.update({ ratings: ratings, averageRating: Number(average.toFixed(1)) });
             showToast(`⭐ Добавлена оценка: ${rating} ★`);
         }
 
-        // ========== НОВЫЕ ФУНКЦИИ ОЧИСТКИ ==========
-        
-        // Очистить километры
         async function clearKilometers() {
-            const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
-            const snapshot = await mikhailRef.once('value');
-            const data = snapshot.val();
-            
-            if (!data) return;
-            
-            await mikhailRef.update({
-                kmToday: 0
-            });
-            
-            showToast('🧹 Километры очищены до 0');
+            await db.ref(`drivers/${MIKHAIL_ID}`).update({ kmToday: 0 });
+            showToast('🧹 Километры очищены');
         }
 
-        // Очистить заработок
         async function clearEarned() {
-            const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
-            const snapshot = await mikhailRef.once('value');
-            const data = snapshot.val();
-            
-            if (!data) return;
-            
-            await mikhailRef.update({
-                earnedToday: 0
-            });
-            
-            showToast('💰 Заработок очищен до 0');
+            await db.ref(`drivers/${MIKHAIL_ID}`).update({ earnedToday: 0 });
+            showToast('💰 Заработок очищен');
         }
 
-        // Очистить рейтинг
         async function clearRating() {
-            const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
+            await db.ref(`drivers/${MIKHAIL_ID}`).update({ ratings: [], averageRating: 0 });
+            showToast('⭐ Рейтинг очищен');
+        }
+
+        // ========== ФУНКЦИИ ЧАТА ==========
+        
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function cleanupChatListeners() {
+            if (chatListener) {
+                db.ref(`chats/${CHAT_ID}/messages`).off('child_added', chatListener);
+                chatListener = null;
+            }
+            if (typingListener) {
+                db.ref(`chats/${CHAT_ID}/typing`).off('value', typingListener);
+                typingListener = null;
+            }
+            if (chatInfoListener) {
+                db.ref(`chats/${CHAT_ID}`).off('value', chatInfoListener);
+                chatInfoListener = null;
+            }
+        }
+
+        function openChat() {
+            chatOverlay.classList.remove('hidden');
+            chatScreen.classList.remove('hidden');
             
-            await mikhailRef.update({
-                ratings: [],
-                averageRating: 0
+            if (currentUserName === 'Михаил') {
+                chatTitle.textContent = '💬 Чат с клиентом';
+                chatSubtitle.textContent = isChatActive ? `Клиент: ${currentClientName || '...'}` : 'Нет активного чата';
+                clientNameSection.classList.add('hidden');
+                endChatSection.classList.add('hidden');
+            } else if (currentUserName === 'Николай') {
+                chatTitle.textContent = '💬 Чат с таксистом';
+                chatSubtitle.textContent = isChatActive ? `Клиент: ${currentClientName}` : 'Нет активного чата';
+                if (!isChatActive) {
+                    clientNameSection.classList.remove('hidden');
+                    endChatSection.classList.add('hidden');
+                } else {
+                    clientNameSection.classList.add('hidden');
+                    endChatSection.classList.remove('hidden');
+                }
+            }
+            
+            subscribeToChat();
+        }
+
+        function closeChat() {
+            chatOverlay.classList.add('hidden');
+            chatScreen.classList.add('hidden');
+            cleanupChatListeners();
+        }
+
+        // НАЧАТЬ ЧАТ - Николай вводит имя клиента
+        async function startNewChat() {
+            if (isStartingChat) {
+                showToast('Чат уже запускается...');
+                return;
+            }
+            
+            const clientName = clientNameInput.value.trim();
+            if (!clientName) {
+                showToast('Введите имя клиента');
+                return;
+            }
+            
+            isStartingChat = true;
+            startChatBtn.disabled = true;
+            startChatBtn.textContent = 'Запуск...';
+            
+            try {
+                currentClientName = clientName;
+                isChatActive = true;
+                
+                await db.ref(`chats/${CHAT_ID}`).set({
+                    active: true,
+                    clientName: clientName,
+                    startedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                await db.ref(`chats/${CHAT_ID}/messages`).remove();
+                
+                const systemMessage = {
+                    senderId: 'system',
+                    senderName: 'Система',
+                    text: `🚀 Чат с клиентом ${clientName} начат`,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    system: true
+                };
+                
+                await db.ref(`chats/${CHAT_ID}/messages`).push(systemMessage);
+                
+                chatSubtitle.textContent = `Клиент: ${clientName}`;
+                clientNameSection.classList.add('hidden');
+                endChatSection.classList.remove('hidden');
+                clientNameInput.value = '';
+                
+                showToast(`✅ Чат с ${clientName} начат`);
+            } catch (error) {
+                console.error('Ошибка при начале чата:', error);
+                showToast('❌ Ошибка при начале чата');
+            } finally {
+                isStartingChat = false;
+                startChatBtn.disabled = false;
+                startChatBtn.textContent = '🚀 Начать чат';
+            }
+        }
+
+        // ЗАВЕРШИТЬ ЧАТ
+        async function endCurrentChat() {
+            if (isEndingChat) {
+                showToast('Чат уже завершается...');
+                return;
+            }
+            
+            if (!isChatActive) {
+                showToast('Нет активного чата');
+                return;
+            }
+            
+            isEndingChat = true;
+            endChatBtn.disabled = true;
+            endChatBtn.textContent = 'Завершение...';
+            
+            try {
+                const clientName = currentClientName;
+                
+                const systemMessage = {
+                    senderId: 'system',
+                    senderName: 'Система',
+                    text: `🏁 Чат с клиентом ${clientName} завершен`,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    system: true
+                };
+                
+                await db.ref(`chats/${CHAT_ID}/messages`).push(systemMessage);
+                
+                await db.ref(`chats/${CHAT_ID}`).update({
+                    active: false,
+                    endedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                isChatActive = false;
+                currentClientName = '';
+                
+                chatSubtitle.textContent = 'Нет активного чата';
+                clientNameSection.classList.remove('hidden');
+                endChatSection.classList.add('hidden');
+                
+                showToast(`🏁 Чат с ${clientName} завершен`);
+            } catch (error) {
+                console.error('Ошибка при завершении чата:', error);
+                showToast('❌ Ошибка при завершении чата');
+            } finally {
+                isEndingChat = false;
+                endChatBtn.disabled = false;
+                endChatBtn.textContent = '🏁 Завершить чат';
+            }
+        }
+
+        // ОТПРАВИТЬ СООБЩЕНИЕ - ИСПРАВЛЕНО!
+        async function sendChatMessage() {
+            if (isSendingMessage) {
+                return;
+            }
+            
+            const text = chatMessageInput.value.trim();
+            if (!text) {
+                return;
+            }
+            
+            if (!isChatActive) {
+                showToast('Нет активного чата');
+                return;
+            }
+            
+            isSendingMessage = true;
+            chatSendBtn.disabled = true;
+            chatMessageInput.disabled = true;
+            
+            try {
+                // ВАЖНО: Для Николая отображаем только имя клиента, без "Николай"
+                let senderName = '';
+                if (currentUserName === 'Михаил') {
+                    senderName = 'Михаил';
+                } else if (currentUserName === 'Николай') {
+                    // Отображаем ТОЛЬКО имя клиента, без "Николай"
+                    senderName = currentClientName;
+                }
+                
+                const message = {
+                    senderId: currentUserName,
+                    senderName: senderName, // Теперь только имя клиента!
+                    text: text,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    clientName: currentClientName
+                };
+                
+                await db.ref(`chats/${CHAT_ID}/messages`).push(message);
+                chatMessageInput.value = '';
+                
+                await db.ref(`chats/${CHAT_ID}/typing/${currentUserName}`).remove();
+            } catch (error) {
+                console.error('Ошибка при отправке:', error);
+                showToast('❌ Ошибка отправки');
+            } finally {
+                isSendingMessage = false;
+                chatSendBtn.disabled = false;
+                chatMessageInput.disabled = false;
+                chatMessageInput.focus();
+            }
+        }
+
+        // Индикатор печати - ИСПРАВЛЕНО!
+        let typingTimeout;
+        async function setTyping(isTyping) {
+            if (!isChatActive) return;
+            if (!currentUserName) return;
+            
+            try {
+                if (isTyping) {
+                    let typingName = '';
+                    if (currentUserName === 'Михаил') {
+                        typingName = 'Михаил';
+                    } else if (currentUserName === 'Николай') {
+                        typingName = currentClientName; // Только имя клиента
+                    }
+                    
+                    await db.ref(`chats/${CHAT_ID}/typing/${currentUserName}`).set({
+                        isTyping: true,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP,
+                        name: typingName
+                    });
+                } else {
+                    await db.ref(`chats/${CHAT_ID}/typing/${currentUserName}`).remove();
+                }
+            } catch (error) {
+                console.error('Ошибка индикатора печати:', error);
+            }
+        }
+
+        // Подписка на сообщения чата
+        function subscribeToChat() {
+            cleanupChatListeners();
+            chatMessages.innerHTML = '';
+            
+            chatInfoListener = db.ref(`chats/${CHAT_ID}`).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    isChatActive = data.active || false;
+                    currentClientName = data.clientName || '';
+                    
+                    if (currentUserName === 'Михаил') {
+                        chatSubtitle.textContent = isChatActive ? `Клиент: ${currentClientName}` : 'Нет активного чата';
+                    } else if (currentUserName === 'Николай') {
+                        chatSubtitle.textContent = isChatActive ? `Клиент: ${currentClientName}` : 'Нет активного чата';
+                        if (!isChatActive) {
+                            clientNameSection.classList.remove('hidden');
+                            endChatSection.classList.add('hidden');
+                        } else {
+                            clientNameSection.classList.add('hidden');
+                            endChatSection.classList.remove('hidden');
+                        }
+                    }
+                }
             });
             
-            showToast('⭐ Рейтинг полностью очищен');
+            chatListener = db.ref(`chats/${CHAT_ID}/messages`)
+                .orderByChild('timestamp')
+                .limitToLast(50)
+                .on('child_added', (snapshot) => {
+                    const msg = snapshot.val();
+                    const existingMessage = document.querySelector(`[data-msg-id="${snapshot.key}"]`);
+                    if (!existingMessage) {
+                        displayChatMessage(msg, snapshot.key);
+                    }
+                });
+            
+            typingListener = db.ref(`chats/${CHAT_ID}/typing`).on('value', (snapshot) => {
+                const typingData = snapshot.val();
+                const oldIndicator = document.getElementById('typing-indicator');
+                if (oldIndicator) oldIndicator.remove();
+                
+                if (typingData && isChatActive) {
+                    for (let userId in typingData) {
+                        if (userId !== currentUserName) {
+                            const typing = typingData[userId];
+                            if (typing && typing.isTyping) {
+                                const indicator = document.createElement('div');
+                                indicator.id = 'typing-indicator';
+                                indicator.className = 'typing-indicator';
+                                indicator.innerHTML = `
+                                    <div class="typing-dots">
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                    </div>
+                                    <div style="color: #a0a8b8; font-size: 12px; margin-top: 4px;">
+                                        ${typing.name || 'Пользователь'} печатает...
+                                    </div>
+                                `;
+                                chatMessages.appendChild(indicator);
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Отображение сообщения
+        function displayChatMessage(msg, msgId) {
+            if (!msg) return;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.dataset.msgId = msgId;
+            
+            if (msg.system) {
+                messageDiv.classList.add('system-message');
+                messageDiv.innerHTML = `<div>${escapeHtml(msg.text)}</div>
+                                       <div class="message-time">${formatTime(msg.timestamp)}</div>`;
+            } else {
+                const isMyMessage = msg.senderId === currentUserName;
+                if (isMyMessage) messageDiv.classList.add('my-message');
+                
+                messageDiv.innerHTML = `
+                    <div class="message-sender">${escapeHtml(msg.senderName || 'Пользователь')}</div>
+                    <div>${escapeHtml(msg.text)}</div>
+                    <div class="message-time">${formatTime(msg.timestamp)}</div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         // ========== АВТОРИЗАЦИЯ ==========
@@ -699,11 +1158,7 @@
         }
 
         async function login(username) {
-            if (!username) {
-                showToast('Введите имя');
-                return;
-            }
-            
+            if (!username) { showToast('Введите имя'); return; }
             if (username.toLowerCase() === 'михаил') {
                 currentUserName = 'Михаил';
                 localStorage.setItem('taximeter_user', 'Михаил');
@@ -711,20 +1166,14 @@
                 mikhailScreen.classList.remove('hidden');
                 nikolayScreen.classList.add('hidden');
                 showToast('🚖 Добро пожаловать, Михаил!');
-            } 
-            else if (username.toLowerCase() === 'николай') {
+            } else if (username.toLowerCase() === 'николай') {
                 currentUserName = 'Николай';
                 localStorage.setItem('taximeter_user', 'Николай');
                 authScreen.classList.add('hidden');
                 mikhailScreen.classList.add('hidden');
                 nikolayScreen.classList.remove('hidden');
                 showToast('📋 Добро пожаловать, Николай!');
-            }
-            else {
-                showToast('Доступ разрешён только Михаилу или Николаю');
-                return;
-            }
-            
+            } else { showToast('Доступ разрешён только Михаилу или Николаю'); return; }
             await initDatabase();
             subscribeToMikhail();
         }
@@ -735,74 +1184,76 @@
             authScreen.classList.remove('hidden');
             mikhailScreen.classList.add('hidden');
             nikolayScreen.classList.add('hidden');
-            
-            if (mikhailListener) {
-                db.ref(`drivers/${MIKHAIL_ID}`).off('value', mikhailListener);
-                mikhailListener = null;
-            }
-            
+            closeChat();
+            if (mikhailListener) db.ref(`drivers/${MIKHAIL_ID}`).off('value', mikhailListener);
+            mikhailListener = null;
             usernameInput.value = '';
             showToast('👋 Вы вышли из системы');
         }
 
         // ========== ОБРАБОТЧИКИ ==========
         
-        loginBtn.addEventListener('click', () => {
-            login(usernameInput.value.trim());
-        });
-
-        usernameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                login(usernameInput.value.trim());
-            }
-        });
-
+        loginBtn.addEventListener('click', () => login(usernameInput.value.trim()));
+        usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') login(usernameInput.value.trim()); });
+        
         document.getElementById('logout-btn-mikhail').addEventListener('click', logout);
         document.getElementById('logout-btn-nikolay').addEventListener('click', logout);
-
-        // Добавление км
+        
+        const mikhailChatBtn = document.getElementById('mikhail-chat-btn');
+        const nikolayChatBtn = document.getElementById('nikolay-chat-btn');
+        
+        const newMikhailBtn = mikhailChatBtn.cloneNode(true);
+        const newNikolayBtn = nikolayChatBtn.cloneNode(true);
+        mikhailChatBtn.parentNode.replaceChild(newMikhailBtn, mikhailChatBtn);
+        nikolayChatBtn.parentNode.replaceChild(newNikolayBtn, nikolayChatBtn);
+        
+        document.getElementById('mikhail-chat-btn').addEventListener('click', openChat);
+        document.getElementById('nikolay-chat-btn').addEventListener('click', openChat);
+        
+        chatCloseBtn.addEventListener('click', closeChat);
+        chatOverlay.addEventListener('click', closeChat);
+        
+        startChatBtn.addEventListener('click', startNewChat);
+        endChatBtn.addEventListener('click', endCurrentChat);
+        
+        chatSendBtn.addEventListener('click', sendChatMessage);
+        chatMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+        
+        chatMessageInput.addEventListener('input', () => {
+            if (isChatActive && !isSendingMessage) {
+                setTyping(true);
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => setTyping(false), 2000);
+            }
+        });
+        
         document.getElementById('add-km-btn').addEventListener('click', () => {
             const km = parseFloat(document.getElementById('add-km-input').value);
-            if (!isNaN(km)) {
-                addKilometers(km);
-                document.getElementById('add-km-input').value = '';
-            }
+            if (!isNaN(km)) { addKilometers(km); document.getElementById('add-km-input').value = ''; }
         });
-
-        // Добавление бензина
+        
         document.getElementById('add-fuel-btn').addEventListener('click', () => {
             const liters = parseFloat(document.getElementById('add-fuel-input').value);
-            if (!isNaN(liters)) {
-                addFuel(liters);
-                document.getElementById('add-fuel-input').value = '';
-            }
+            if (!isNaN(liters)) { addFuel(liters); document.getElementById('add-fuel-input').value = ''; }
         });
-
-        // ОЦЕНКИ
+        
         document.getElementById('rate-1').addEventListener('click', () => addRating(1));
         document.getElementById('rate-2').addEventListener('click', () => addRating(2));
         document.getElementById('rate-3').addEventListener('click', () => addRating(3));
         document.getElementById('rate-4').addEventListener('click', () => addRating(4));
         document.getElementById('rate-5').addEventListener('click', () => addRating(5));
-
-        // ========== НОВЫЕ ОБРАБОТЧИКИ ОЧИСТКИ ==========
         
-        // Очистить километры
         document.getElementById('clear-km-btn').addEventListener('click', clearKilometers);
-        
-        // Очистить заработок
         document.getElementById('clear-earned-btn').addEventListener('click', clearEarned);
-        
-        // Очистить рейтинг
         document.getElementById('clear-rating-btn').addEventListener('click', clearRating);
 
-        // Анонимный вход Firebase
         auth.signInAnonymously().catch(console.error);
-        
-        // Проверяем сохранённую сессию
-        window.addEventListener('load', () => {
-            checkSavedSession();
-        });
+        window.addEventListener('load', checkSavedSession);
     </script>
 </body>
 </html>
