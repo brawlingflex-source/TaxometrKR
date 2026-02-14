@@ -686,13 +686,13 @@
         let typingListener = null;
         let chatInfoListener = null;
         let unreadMessagesListener = null;
+        let unreadCountListener = null;
         let currentClientName = '';
         let isChatActive = false;
         let isSendingMessage = false;
         let isEndingChat = false;
         let isStartingChat = false;
-        let lastReadTimestamp = 0;
-        let unreadCount = 0;
+        let processedMessageIds = new Set(); // Для отслеживания уже обработанных сообщений
 
         // ========== DOM ЭЛЕМЕНТЫ ==========
         const authScreen = document.getElementById('auth-screen');
@@ -754,12 +754,6 @@
                     averageRating: 0
                 });
             }
-            
-            // Инициализируем счётчик непрочитанных сообщений
-            const unreadSnapshot = await db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).once('value');
-            if (!unreadSnapshot.exists()) {
-                await db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).set(0);
-            }
         }
 
         function updateMikhailUI(data) {
@@ -778,14 +772,17 @@
             generateStars(rating);
         }
 
+        // ИСПРАВЛЕНО: теперь только целые звезды, без половинок
         function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
+            const fullStars = Math.floor(rating); // Просто округляем вниз (2.9 → 2 звезды, 3.0 → 3 звезды)
+            
             let starsHtml = '';
             for (let i = 0; i < 5; i++) {
-                if (i < fullStars) starsHtml += '<span class="star filled">★</span>';
-                else if (i === fullStars && hasHalfStar) starsHtml += '<span class="star filled">½</span>';
-                else starsHtml += '<span class="star">☆</span>';
+                if (i < fullStars) {
+                    starsHtml += '<span class="star filled">★</span>';
+                } else {
+                    starsHtml += '<span class="star">☆</span>';
+                }
             }
             starRatingEl.innerHTML = starsHtml;
         }
@@ -829,51 +826,91 @@
         }
 
         // Увеличить счётчик непрочитанных
-        async function incrementUnreadCount() {
+        async function incrementUnreadCount(messageId) {
+            // Проверяем, не обрабатывали ли мы уже это сообщение
+            if (processedMessageIds.has(messageId)) {
+                return;
+            }
+            
+            processedMessageIds.add(messageId);
+            
             const currentCount = await getUnreadCount();
             const newCount = currentCount + 1;
             await db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).set(newCount);
-            updateNotificationBadge(newCount);
         }
 
         // Сбросить счётчик непрочитанных (при открытии чата)
         async function resetUnreadCount() {
             await db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).set(0);
-            updateNotificationBadge(0);
+            // Очищаем Set при сбросе счётчика
+            processedMessageIds.clear();
         }
 
         // Слушатель непрочитанных сообщений
         function subscribeToUnreadMessages() {
+            // Отписываемся от предыдущего слушателя
             if (unreadMessagesListener) {
                 db.ref(`chats/${CHAT_ID}/messages`).off('child_added', unreadMessagesListener);
             }
+            
+            if (unreadCountListener) {
+                db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).off('value', unreadCountListener);
+            }
+            
+            // Очищаем Set при новой подписке
+            processedMessageIds.clear();
             
             // Сначала получаем текущее значение счётчика
             getUnreadCount().then(count => {
                 updateNotificationBadge(count);
             });
             
-            // Слушаем новые сообщения
+            // Слушаем изменения счётчика в реальном времени
+            unreadCountListener = db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).on('value', (snapshot) => {
+                const count = snapshot.val() || 0;
+                updateNotificationBadge(count);
+            });
+            
+            // Получаем ID последних 50 сообщений, чтобы отметить их как обработанные
+            db.ref(`chats/${CHAT_ID}/messages`)
+                .orderByChild('timestamp')
+                .limitToLast(50)
+                .once('value')
+                .then((snapshot) => {
+                    const messages = snapshot.val();
+                    if (messages) {
+                        Object.keys(messages).forEach(msgId => {
+                            processedMessageIds.add(msgId);
+                        });
+                    }
+                });
+            
+            // Слушаем ТОЛЬКО новые сообщения (не все сразу)
             unreadMessagesListener = db.ref(`chats/${CHAT_ID}/messages`)
                 .orderByChild('timestamp')
-                .limitToLast(1)
+                .limitToLast(1) // Слушаем только последнее сообщение
                 .on('child_added', (snapshot) => {
                     const msg = snapshot.val();
+                    const msgId = snapshot.key;
+                    
+                    // Если сообщение уже обработано - игнорируем
+                    if (processedMessageIds.has(msgId)) {
+                        return;
+                    }
+                    
+                    processedMessageIds.add(msgId);
                     
                     // Если сообщение не наше и чат не открыт - увеличиваем счётчик
                     if (msg.senderId !== currentUserName) {
                         // Проверяем, открыт ли чат
                         if (chatScreen.classList.contains('hidden')) {
-                            incrementUnreadCount();
+                            // Получаем текущее значение и увеличиваем
+                            db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).transaction((current) => {
+                                return (current || 0) + 1;
+                            });
                         }
                     }
                 });
-            
-            // Также слушаем изменения счётчика в реальном времени
-            db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).on('value', (snapshot) => {
-                const count = snapshot.val() || 0;
-                updateNotificationBadge(count);
-            });
         }
 
         // ========== ДЕЙСТВИЯ НИКОЛАЯ ==========
@@ -1038,6 +1075,9 @@
                     Николай: 0
                 });
                 
+                // Очищаем Set обработанных сообщений
+                processedMessageIds.clear();
+                
                 const systemMessage = {
                     senderId: 'system',
                     senderName: 'Система',
@@ -1150,7 +1190,11 @@
                     clientName: currentClientName
                 };
                 
-                await db.ref(`chats/${CHAT_ID}/messages`).push(message);
+                const newMessageRef = await db.ref(`chats/${CHAT_ID}/messages`).push(message);
+                
+                // Добавляем ID сообщения в Set сразу после отправки
+                processedMessageIds.add(newMessageRef.key);
+                
                 chatMessageInput.value = '';
                 
                 await db.ref(`chats/${CHAT_ID}/typing/${currentUserName}`).remove();
@@ -1223,9 +1267,12 @@
                 .limitToLast(50)
                 .on('child_added', (snapshot) => {
                     const msg = snapshot.val();
-                    const existingMessage = document.querySelector(`[data-msg-id="${snapshot.key}"]`);
+                    const msgId = snapshot.key;
+                    const existingMessage = document.querySelector(`[data-msg-id="${msgId}"]`);
                     if (!existingMessage) {
-                        displayChatMessage(msg, snapshot.key);
+                        displayChatMessage(msg, msgId);
+                        // Добавляем ID в Set при отображении
+                        processedMessageIds.add(msgId);
                     }
                 });
             
@@ -1347,7 +1394,12 @@
             cleanupChatListeners();
             
             // Отписываемся от счётчика
-            db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).off();
+            if (unreadCountListener) {
+                db.ref(`chats/${CHAT_ID}/unreadCount/${currentUserName}`).off('value', unreadCountListener);
+            }
+            
+            // Очищаем Set
+            processedMessageIds.clear();
             
             usernameInput.value = '';
             showToast('👋 Вы вышли из системы');
