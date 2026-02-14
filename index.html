@@ -90,15 +90,32 @@
             margin-bottom: 10px;
         }
         
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
         .user-name {
             font-size: 28px;
             font-weight: 800;
             color: #ffd700;
         }
         
+        .reviews-count {
+            font-size: 14px;
+            color: #a0a8b8;
+            margin-top: 4px;
+        }
+        
         .header-buttons {
             display: flex;
             gap: 12px;
+            align-items: center;
+        }
+        
+        .chat-icon-container {
+            position: relative;
+            display: inline-block;
         }
         
         .chat-icon-btn {
@@ -114,6 +131,24 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(37,211,102,0.3);
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            background: #ff3b30;
+            border: 2px solid #0b0e14;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
         .logout-btn {
@@ -489,9 +524,15 @@
         <!-- Интерфейс Михаила -->
         <div id="mikhail-screen" class="taximeter-screen hidden">
             <div class="header">
-                <span class="user-name">🚖 Михаил</span>
+                <div class="user-info">
+                    <span class="user-name">🚖 Михаил</span>
+                    <span class="reviews-count" id="reviews-count">Всего отзывов: 0</span>
+                </div>
                 <div class="header-buttons">
-                    <button id="mikhail-chat-btn" class="chat-icon-btn">💬</button>
+                    <div class="chat-icon-container" id="mikhail-chat-container">
+                        <button id="mikhail-chat-btn" class="chat-icon-btn">💬</button>
+                        <div id="mikhail-notification-dot" class="notification-dot hidden"></div>
+                    </div>
                     <button id="logout-btn-mikhail" class="logout-btn">Выйти</button>
                 </div>
             </div>
@@ -531,7 +572,10 @@
             <div class="header">
                 <span class="user-name">📋 Николай</span>
                 <div class="header-buttons">
-                    <button id="nikolay-chat-btn" class="chat-icon-btn">💬</button>
+                    <div class="chat-icon-container" id="nikolay-chat-container">
+                        <button id="nikolay-chat-btn" class="chat-icon-btn">💬</button>
+                        <div id="nikolay-notification-dot" class="notification-dot hidden"></div>
+                    </div>
                     <button id="logout-btn-nikolay" class="logout-btn">Выйти</button>
                 </div>
             </div>
@@ -543,6 +587,7 @@
                     <span>📊 <span id="nikolay-km">0.00</span> км</span>
                     <span>💰 <span id="nikolay-money">0.00</span> ₽</span>
                     <span>⛽ <span id="nikolay-fuel">0.00</span> л</span>
+                    <span>📝 <span id="nikolay-reviews-count">0</span> отзывов</span>
                 </div>
             </div>
             
@@ -633,11 +678,14 @@
         let chatListener = null;
         let typingListener = null;
         let chatInfoListener = null;
+        let unreadMessagesListener = null;
         let currentClientName = '';
         let isChatActive = false;
         let isSendingMessage = false;
         let isEndingChat = false;
         let isStartingChat = false;
+        let lastReadTimestamp = 0;
+        let unreadCount = 0;
 
         // ========== DOM ЭЛЕМЕНТЫ ==========
         const authScreen = document.getElementById('auth-screen');
@@ -665,12 +713,18 @@
         const fuelLeftEl = document.getElementById('fuel-left');
         const ratingTextEl = document.getElementById('rating-text');
         const starRatingEl = document.getElementById('star-rating');
+        const reviewsCountEl = document.getElementById('reviews-count');
 
         const nikolayRatingEl = document.getElementById('nikolay-rating');
         const nikolayKmEl = document.getElementById('nikolay-km');
         const nikolayMoneyEl = document.getElementById('nikolay-money');
         const nikolayFuelEl = document.getElementById('nikolay-fuel');
+        const nikolayReviewsCountEl = document.getElementById('nikolay-reviews-count');
         
+        // Элементы уведомлений
+        const mikhailNotificationDot = document.getElementById('mikhail-notification-dot');
+        const nikolayNotificationDot = document.getElementById('nikolay-notification-dot');
+
         // ========== ФУНКЦИИ ТАКСОМЕТРА ==========
         
         function showToast(text) {
@@ -697,11 +751,18 @@
 
         function updateMikhailUI(data) {
             if (!data) return;
+            
             kmTodayEl.textContent = Number(data.kmToday || 0).toFixed(2);
             earnedTodayEl.textContent = Number(data.earnedToday || 0).toFixed(2);
             fuelLeftEl.textContent = Number(data.fuelLeft || 0).toFixed(2);
+            
             const rating = Number(data.averageRating || 0);
             ratingTextEl.textContent = `${rating.toFixed(1)} ★`;
+            
+            // Обновляем счётчик отзывов
+            const reviewsCount = data.ratings ? data.ratings.length : 0;
+            reviewsCountEl.textContent = `Всего отзывов: ${reviewsCount}`;
+            
             generateStars(rating);
         }
 
@@ -729,8 +790,59 @@
                         nikolayMoneyEl.textContent = Number(data.earnedToday || 0).toFixed(2);
                         nikolayFuelEl.textContent = Number(data.fuelLeft || 0).toFixed(2);
                         nikolayRatingEl.textContent = Number(data.averageRating || 0).toFixed(1);
+                        nikolayReviewsCountEl.textContent = data.ratings ? data.ratings.length : 0;
                     }
                 }
+            });
+        }
+
+        // ========== ФУНКЦИИ УВЕДОМЛЕНИЙ ==========
+        
+        function showNotificationDot(show) {
+            if (currentUserName === 'Михаил') {
+                if (show) {
+                    mikhailNotificationDot.classList.remove('hidden');
+                } else {
+                    mikhailNotificationDot.classList.add('hidden');
+                }
+            } else if (currentUserName === 'Николай') {
+                if (show) {
+                    nikolayNotificationDot.classList.remove('hidden');
+                } else {
+                    nikolayNotificationDot.classList.add('hidden');
+                }
+            }
+        }
+
+        async function getLastReadTimestamp() {
+            const snapshot = await db.ref(`chats/${CHAT_ID}/readReceipts/${currentUserName}`).once('value');
+            return snapshot.val() || 0;
+        }
+
+        async function updateLastReadTimestamp() {
+            const now = Date.now();
+            await db.ref(`chats/${CHAT_ID}/readReceipts/${currentUserName}`).set(now);
+            lastReadTimestamp = now;
+            showNotificationDot(false);
+        }
+
+        function subscribeToUnreadMessages() {
+            if (unreadMessagesListener) {
+                db.ref(`chats/${CHAT_ID}/messages`).off('child_added', unreadMessagesListener);
+            }
+            
+            getLastReadTimestamp().then(timestamp => {
+                lastReadTimestamp = timestamp;
+                
+                unreadMessagesListener = db.ref(`chats/${CHAT_ID}/messages`)
+                    .orderByChild('timestamp')
+                    .startAt(lastReadTimestamp + 1)
+                    .on('child_added', (snapshot) => {
+                        const msg = snapshot.val();
+                        if (msg.senderId !== currentUserName && !isChatActive && !chatScreen.classList.contains('hidden')) {
+                            showNotificationDot(true);
+                        }
+                    });
             });
         }
 
@@ -763,15 +875,24 @@
 
         async function addRating(rating) {
             if (rating < 1 || rating > 5) return;
+            
             const mikhailRef = db.ref(`drivers/${MIKHAIL_ID}`);
             const snapshot = await mikhailRef.once('value');
             const data = snapshot.val();
+            
             if (!data) return;
+            
             const ratings = data.ratings || [];
             ratings.push(rating);
+            
             const sum = ratings.reduce((a, b) => a + b, 0);
             const average = sum / ratings.length;
-            await mikhailRef.update({ ratings: ratings, averageRating: Number(average.toFixed(1)) });
+            
+            await mikhailRef.update({ 
+                ratings: ratings, 
+                averageRating: Number(average.toFixed(1)) 
+            });
+            
             showToast(`⭐ Добавлена оценка: ${rating} ★`);
         }
 
@@ -786,7 +907,10 @@
         }
 
         async function clearRating() {
-            await db.ref(`drivers/${MIKHAIL_ID}`).update({ ratings: [], averageRating: 0 });
+            await db.ref(`drivers/${MIKHAIL_ID}`).update({ 
+                ratings: [], 
+                averageRating: 0 
+            });
             showToast('⭐ Рейтинг очищен');
         }
 
@@ -817,11 +941,17 @@
                 db.ref(`chats/${CHAT_ID}`).off('value', chatInfoListener);
                 chatInfoListener = null;
             }
+            if (unreadMessagesListener) {
+                db.ref(`chats/${CHAT_ID}/messages`).off('child_added', unreadMessagesListener);
+                unreadMessagesListener = null;
+            }
         }
 
         function openChat() {
             chatOverlay.classList.remove('hidden');
             chatScreen.classList.remove('hidden');
+            
+            updateLastReadTimestamp();
             
             if (currentUserName === 'Михаил') {
                 chatTitle.textContent = '💬 Чат с клиентом';
@@ -849,7 +979,6 @@
             cleanupChatListeners();
         }
 
-        // НАЧАТЬ ЧАТ - Николай вводит имя клиента
         async function startNewChat() {
             if (isStartingChat) {
                 showToast('Чат уже запускается...');
@@ -877,6 +1006,7 @@
                 });
                 
                 await db.ref(`chats/${CHAT_ID}/messages`).remove();
+                await db.ref(`chats/${CHAT_ID}/readReceipts`).remove();
                 
                 const systemMessage = {
                     senderId: 'system',
@@ -904,7 +1034,6 @@
             }
         }
 
-        // ЗАВЕРШИТЬ ЧАТ
         async function endCurrentChat() {
             if (isEndingChat) {
                 showToast('Чат уже завершается...');
@@ -956,7 +1085,6 @@
             }
         }
 
-        // ОТПРАВИТЬ СООБЩЕНИЕ - ИСПРАВЛЕНО!
         async function sendChatMessage() {
             if (isSendingMessage) {
                 return;
@@ -977,18 +1105,16 @@
             chatMessageInput.disabled = true;
             
             try {
-                // ВАЖНО: Для Николая отображаем только имя клиента, без "Николай"
                 let senderName = '';
                 if (currentUserName === 'Михаил') {
                     senderName = 'Михаил';
                 } else if (currentUserName === 'Николай') {
-                    // Отображаем ТОЛЬКО имя клиента, без "Николай"
                     senderName = currentClientName;
                 }
                 
                 const message = {
                     senderId: currentUserName,
-                    senderName: senderName, // Теперь только имя клиента!
+                    senderName: senderName,
                     text: text,
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
                     clientName: currentClientName
@@ -998,6 +1124,10 @@
                 chatMessageInput.value = '';
                 
                 await db.ref(`chats/${CHAT_ID}/typing/${currentUserName}`).remove();
+                
+                if (chatScreen.classList.contains('hidden')) {
+                    await updateLastReadTimestamp();
+                }
             } catch (error) {
                 console.error('Ошибка при отправке:', error);
                 showToast('❌ Ошибка отправки');
@@ -1009,7 +1139,6 @@
             }
         }
 
-        // Индикатор печати - ИСПРАВЛЕНО!
         let typingTimeout;
         async function setTyping(isTyping) {
             if (!isChatActive) return;
@@ -1021,7 +1150,7 @@
                     if (currentUserName === 'Михаил') {
                         typingName = 'Михаил';
                     } else if (currentUserName === 'Николай') {
-                        typingName = currentClientName; // Только имя клиента
+                        typingName = currentClientName;
                     }
                     
                     await db.ref(`chats/${CHAT_ID}/typing/${currentUserName}`).set({
@@ -1037,7 +1166,6 @@
             }
         }
 
-        // Подписка на сообщения чата
         function subscribeToChat() {
             cleanupChatListeners();
             chatMessages.innerHTML = '';
@@ -1106,7 +1234,6 @@
             });
         }
 
-        // Отображение сообщения
         function displayChatMessage(msg, msgId) {
             if (!msg) return;
             
@@ -1131,6 +1258,10 @@
             
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            if (!chatScreen.classList.contains('hidden') && msg.senderId !== currentUserName) {
+                updateLastReadTimestamp();
+            }
         }
 
         // ========== АВТОРИЗАЦИЯ ==========
@@ -1145,6 +1276,7 @@
                     mikhailScreen.classList.remove('hidden');
                     nikolayScreen.classList.add('hidden');
                     subscribeToMikhail();
+                    subscribeToUnreadMessages();
                     showToast('🚖 С возвращением, Михаил!');
                 } else if (savedUser === 'Николай') {
                     currentUserName = 'Николай';
@@ -1152,6 +1284,7 @@
                     mikhailScreen.classList.add('hidden');
                     nikolayScreen.classList.remove('hidden');
                     subscribeToMikhail();
+                    subscribeToUnreadMessages();
                     showToast('📋 С возвращением, Николай!');
                 }
             }
@@ -1176,6 +1309,7 @@
             } else { showToast('Доступ разрешён только Михаилу или Николаю'); return; }
             await initDatabase();
             subscribeToMikhail();
+            subscribeToUnreadMessages();
         }
 
         function logout() {
@@ -1187,6 +1321,7 @@
             closeChat();
             if (mikhailListener) db.ref(`drivers/${MIKHAIL_ID}`).off('value', mikhailListener);
             mikhailListener = null;
+            cleanupChatListeners();
             usernameInput.value = '';
             showToast('👋 Вы вышли из системы');
         }
